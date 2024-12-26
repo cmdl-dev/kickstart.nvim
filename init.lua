@@ -161,8 +161,7 @@ vim.opt.scrolloff = 10
 --  See `:help vim.keymap.set()`
 vim.keymap.set('i', 'jk', '<Esc>')
 vim.keymap.set('n', '<leader>e', ':Explore<CR>')
-vim.keymap.set('n', '<leader>fs', ':w<CR>', { desc = '[F]ile [s]ave' })
-
+vim.keymap.set('n', ',w', ':w<CR>', { desc = 'Save Workspace' })
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -224,7 +223,9 @@ vim.opt.rtp:prepend(lazypath)
 --  To check the current status of your plugins, run
 --    :Lazy
 --
+--
 --  You can press `?` in this menu for help. Use `:q` to close the window
+--
 --
 --  To update plugins you can run
 --    :Lazy update
@@ -404,6 +405,8 @@ require('lazy').setup({
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
+
+      require('obsidian').util.cursor_on_markdown_link()
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
