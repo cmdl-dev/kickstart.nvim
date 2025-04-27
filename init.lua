@@ -298,6 +298,10 @@ vim.opt.rtp:prepend(lazypath)
 --  To update plugins you can run
 --    :Lazy update
 --
+
+
+-- The line beneath this is called `modeline`. See `:help modeline`
+-- vim: ts=2 sts=2 sw=2 et
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
@@ -448,17 +452,47 @@ require('lazy').setup({
       -- Telescope picker. This is really useful to discover what Telescope can
       -- do as well as how to actually do it!
 
+      local actions = require('telescope.actions')
+      local action_state = require('telescope.actions.state')
+
+      local my_custom_open = function(prompt_bufnr)
+        local selection = action_state.get_selected_entry()
+        if not selection then
+          return
+        end
+
+        -- Get the original path
+        local path = selection.path or selection.value
+
+        -- Escape parentheses in the path
+        local escaped_path = path:gsub("%(", "\\("):gsub("%)", "\\)")
+
+        -- Close Telescope prompt
+        actions.close(prompt_bufnr)
+
+        -- Open the escaped path in a new buffer
+        vim.cmd("edit " .. escaped_path)
+      end
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            i = {
+              ["<CR>"] = function(prompt_bufnr) 
+                my_custom_open(prompt_bufnr)
+              end,
+            },
+            n = {
+              ["<CR>"] = function(prompt_bufnr) 
+                my_custom_open(prompt_bufnr)
+              end,
+            }
+          },
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
@@ -474,7 +508,6 @@ require('lazy').setup({
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
 
-      require('obsidian').util.cursor_on_markdown_link()
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
@@ -1038,6 +1071,3 @@ require('lazy').setup({
     },
   },
 })
-
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
